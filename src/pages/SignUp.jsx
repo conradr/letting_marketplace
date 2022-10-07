@@ -47,16 +47,21 @@ const SignUp = () => {
       })
 
       //create a copy of the form in state
-      const formDataCopy = { ...formData }
+      // const formDataCopy = { ...formData }
 
       //we don't want to save the password to the database
-      delete formDataCopy.password
+      // delete formDataCopy.password
 
       //get the time from the server
-      formDataCopy.timestamp = serverTimestamp()
+      // formDataCopy.timestamp = serverTimestamp()
 
       //add the user to the database
-      await setDoc(doc(db, 'users', user.uid), formDataCopy)
+      // we don't need to remove the password, just create a new object with the data we need.
+      await setDoc(doc(db, 'users', user.uid), {
+        name,
+        email,
+        timestamp: serverTimestamp(),
+      })
 
       navigate('/')
     } catch (error) {
