@@ -5,6 +5,7 @@ import {
   createUserWithEmailAndPassword,
   updateProfile,
 } from 'firebase/auth'
+import { setDoc, doc, serverTimestamp } from 'firebase/firestore'
 import { db } from '../firebase.config'
 import { ReactComponent as ArrowRightIcon } from '../assets/svg/keyboardArrowRightIcon.svg'
 import visibilityIcon from '../assets/svg/visibilityIcon.svg'
@@ -38,10 +39,25 @@ const SignUp = () => {
         email,
         password
       )
+
       const user = userCredential.user
+
       updateProfile(auth.currentUser, {
         displayName: name,
       })
+
+      //create a copy of the form in state
+      const formDataCopy = { ...formData }
+
+      //we don't want to save the password to the database
+      delete formDataCopy.password
+
+      //get the time from the server
+      formDataCopy.timestamp = serverTimestamp()
+
+      //add the user to the database
+      await setDoc(doc(db, 'users', user.uid), formDataCopy)
+
       navigate('/')
     } catch (error) {
       console.log(error)
