@@ -12,7 +12,7 @@ import {
 import { db } from '../firebase.config'
 import { toast } from 'react-toastify'
 import Spinner from '../components/Spinner'
-import { querystring } from '@firebase/util'
+import ListingItem from '../components/ListingItem'
 
 const Category = () => {
   const [listings, setListings] = useState(null)
@@ -27,14 +27,14 @@ const Category = () => {
         const listingsRef = collection(db, 'listings')
 
         // create a query
-        const q = query(
+        const buildQuery = query(
           listingsRef,
           where('type', '==', params.categoryName),
           orderBy('timestamp', 'desc', limit(10))
         )
         // execute query
 
-        const querySnap = await getDocs(q)
+        const querySnap = await getDocs(buildQuery)
 
         const listingsTemp = []
 
@@ -69,7 +69,12 @@ const Category = () => {
           <main>
             <ul className='categoryListings'>
               {listings.map((listing) => (
-                <h3>{listing.data.name}</h3>
+                <ListingItem
+                  listing={listing.data}
+                  id={listing.id}
+                  key={listing.id}
+                  
+                />
               ))}
             </ul>
           </main>
