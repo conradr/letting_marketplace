@@ -7,19 +7,17 @@ export const useAuthStatus = () => {
   const isMounted = useRef(true)
 
   useEffect(() => {
-    if (isMounted) {
-      const auth = getAuth()
-      onAuthStateChanged(auth, (user) => {
-        if (user) {
-          setLoggedIn(true)
-        }
-        setCheckingStatus(false)
-      })
-    }
-    return () => {
-        isMounted.current = false
-    }
-  }, [isMounted])
+    const auth = getAuth()
+    // FIX: use the unsubscribe returned from onAuthStateChanged for cleanup
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setLoggedIn(true)
+      }
+      setCheckingStatus(false)
+    })
+
+    return unsubscribe
+  }, [])
 
   return { loggedIn, checkingStatus }
 }
